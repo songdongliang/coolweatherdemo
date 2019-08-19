@@ -1,6 +1,7 @@
 package com.sdl.coolweather.ui.area
 
 import android.app.ProgressDialog
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,9 +12,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.sdl.coolweather.MainActivity
 import com.sdl.coolweather.R
 import com.sdl.coolweather.databinding.ChooseAreaBinding
+import com.sdl.coolweather.ui.weather.WeatherActivity
 import com.sdl.coolweather.util.InjectorUtil
+import kotlinx.android.synthetic.main.activity_weather.*
 import kotlinx.android.synthetic.main.choose_area.*
 
 /**
@@ -71,7 +75,17 @@ class ChooseAreaFragment: Fragment() {
         })
         viewModel.areaSelected.observe(this, Observer {selected ->
             if (selected && viewModel.selectedCountry != null) {
-                Log.i("cool weather", viewModel.selectedCountry?.countryName ?: "数据为空")
+                if (activity is MainActivity) {
+                    val intent = Intent(activity, WeatherActivity::class.java)
+                    intent.putExtra("weather_id", viewModel.selectedCountry!!.weatherId)
+                    startActivity(intent)
+                    activity?.finish()
+                } else if (activity is WeatherActivity) {
+                    val weatherActivity = activity as WeatherActivity
+                    weatherActivity.drawerLayout.closeDrawers()
+                    weatherActivity.viewModel.weatherId = viewModel.selectedCountry!!.weatherId
+                    weatherActivity.viewModel.refreshWeather()
+                }
                 viewModel.areaSelected.value = false
             }
         })

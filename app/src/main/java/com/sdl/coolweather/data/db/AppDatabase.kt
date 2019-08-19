@@ -20,6 +20,8 @@ abstract class AppDatabase: RoomDatabase() {
 
     abstract fun placeDao(): PlaceDao
 
+    abstract fun weatherDao(): WeatherDao
+
     companion object {
 
         @Volatile
